@@ -6,8 +6,8 @@ function Posts(props) {
     const currentUser = props.current_user;
     const csrf_token = props.get_cookie();
     const [posts, setPosts] = React.useState([]);
-    const [loading, setLoading] = React.useState(true);
-    const [error, setError] = React.useState(null);
+    // const [loading, setLoading] = React.useState(true);
+    // const [error, setError] = React.useState(null);
     var path = window.location.pathname.endsWith("/") ? '' : window.location.pathname;
     var counter = 0;
 
