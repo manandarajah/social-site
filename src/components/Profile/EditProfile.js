@@ -16,11 +16,7 @@ function EditProfile(props) {
         first_name: profile.first_name || "",
         last_name: profile.last_name || "",
         gender: profile.gender || "",
-        sexuality: profile.sexuality || "",
         birthday: profile.birthday || "",
-        height: profile.height || "",
-        weight: profile.weight || "",
-        body_type: profile.body_type || "",
         password: "",
         confirm_password: ""
     });
@@ -74,11 +70,7 @@ function EditProfile(props) {
                 { label: "First Name", input_type: "text", pattern: "^[A-Za-z0-9]+$", value: formData.first_name, key: "first_name" },
                 { label: "Last Name", input_type: "text", pattern: "^[A-Za-z0-9]+$", value: formData.last_name, key: "last_name" },
                 { label: "Gender", input_type: "select", value: formData.gender, key: "gender" },
-                { label: "Sexuality", input_type: "select", value: formData.sexuality, key: "sexuality" },
-                { label: "Birthday", input_type: "date", pattern: "", value: formData.birthday, key: "birthday" },
-                { label: "Height", input_type: "number", pattern: "", value: formData.height, key: "height" },
-                { label: "Weight", input_type: "number", pattern: "", value: formData.weight, key: "weight" },
-                { label: "Body Type", input_type: "select", value: formData.body_type, key: "body_type" },
+                { label: "Birthday", input_type: "date", pattern: "", value: formData.birthday, key: "birthday" }
             ].map(field => (
                 <div className="row mb-2" key={field.key}>
                     <div className="col-5 fw-semibold">{field.label}:</div>
@@ -93,32 +85,6 @@ function EditProfile(props) {
                                         <option value="nonbinary">Non-binary</option>
                                         <option value="other">Other</option>
                                         <option value="prefer_not_say">Prefer not to say</option>
-                                    </select>
-                                )}
-                                {field.key === "sexuality" && (
-                                    <select class="form-select" name="sexuality" onChange={handleChange}>
-                                        <option value="" disabled selected>Select sexuality</option>
-                                        <option value="straight">Straight</option>
-                                        <option value="gay">Gay</option>
-                                        <option value="lesbian">Lesbian</option>
-                                        <option value="bisexual">Bisexual</option>
-                                        <option value="asexual">Asexual</option>
-                                        <option value="pansexual">Pansexual</option>
-                                        <option value="queer">Queer</option>
-                                        <option value="other">Other</option>
-                                        <option value="prefer_not_say">Prefer not to say</option>
-                                    </select>
-                                )}
-                                {field.key === "body_type" && (
-                                    <select class="form-select" name="body_type" onChange={handleChange}>
-                                        <option value="" disabled selected>Select body type</option>
-                                        <option value="slim">Slim</option>
-                                        <option value="average">Average</option>
-                                        <option value="athletic">Athletic</option>
-                                        <option value="curvy">Curvy</option>
-                                        <option value="muscular">Muscular</option>
-                                        <option value="plus_size">Plus Size</option>
-                                        <option value="other">Other</option>
                                     </select>
                                 )}
                             </div>

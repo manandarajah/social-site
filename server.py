@@ -96,8 +96,6 @@ POST_REGEX = r"^[A-Za-z0-9\s\.\,\!\?\-\'\"\n\r]+$"
 NUM_REGEX = r"^\d{1,3}(\.\d{1,2})?$"
 DATE_REGEX = r"^\d{4}-\d{2}-\d{2}$"
 GEN_REGEX = r"^(male|female|nonbinary|other|prefer not to say)$"
-X_REGEX = r"^(straight|gay|lesbian|bisexual|asexual|pansexual|queer|other|prefer not to say)$"
-BT_REGEX = r"^(slim|average|athletic|curvy|muscular|plus size|other|prefer not to say)$"
 
 # Regenerate session for logged-in user
 def regenerate_session():
@@ -407,11 +405,7 @@ def create_account():
             {'input': first_name, 'pattern': LEGAL_TEXT_REGEX},
             {'input': last_name, 'pattern': LEGAL_TEXT_REGEX},
             {"input": gender, "pattern": GEN_REGEX},
-            {"input": sexuality, "pattern": X_REGEX},
-            {"input": birthday, "pattern": DATE_REGEX},
-            {"input": height or None, "pattern": NUM_REGEX},
-            {"input": weight or None, "pattern": NUM_REGEX},
-            {"input": body_type or None, "pattern": BT_REGEX}
+            {"input": birthday, "pattern": DATE_REGEX}
         ]
 
         # Basic validation
@@ -506,11 +500,7 @@ def update_account():
         {"field": "first_name", "pattern": LEGAL_TEXT_REGEX},
         {"field": "last_name", "pattern": LEGAL_TEXT_REGEX},
         {"field": "gender", "pattern": GEN_REGEX},
-        {"field": "sexuality", "pattern": X_REGEX},
-        {"field": "birthday", "pattern": DATE_REGEX},
-        {"field": "height", "pattern": NUM_REGEX},
-        {"field": "weight", "pattern": NUM_REGEX},
-        {"field": "body_type", "pattern": BT_REGEX}
+        {"field": "birthday", "pattern": DATE_REGEX}
     ]
 
     for update_obj in updatable_fields:
