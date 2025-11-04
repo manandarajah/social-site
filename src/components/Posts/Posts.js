@@ -33,12 +33,12 @@ function Posts(props) {
                 post.content = atob(post.content)
             });
 
-            setPosts(data.posts);
-            setLoading(false);
+            // setPosts(data.posts);
+            // setLoading(false);
         })
         .catch(err => {
-            setError(err.message);
-            setLoading(false);
+            // setError(err.message);
+            // setLoading(false);
         });
     }, []);
 
@@ -75,7 +75,7 @@ function Posts(props) {
             setPosts(prevPosts => prevPosts.filter(p => p.id !== postId));
         })
         .catch(err => {
-            setError(`Delete failed: ${err.message}`);
+            // setError(`Delete failed: ${err.message}`);
         });
     }
 
