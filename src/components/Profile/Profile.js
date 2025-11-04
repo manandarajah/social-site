@@ -32,7 +32,7 @@ function Profile(props) {
             setError(err.message);
             setLoading(false);
         });
-    }, []);
+    }, [csrf_token]);
 
     if (loading) {
         return (

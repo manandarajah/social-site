@@ -30,17 +30,19 @@ function Posts(props) {
                 post.id = counter++;
                 post.url = '/'+post.username;
                 post.edit_mode = false;
-                post.content = atob(post.content)
+                post.content = atob(post.content);
+
+                return post;
             });
 
-            // setPosts(data.posts);
+            setPosts(data.posts);
             // setLoading(false);
         })
         .catch(err => {
             // setError(err.message);
             // setLoading(false);
         });
-    }, []);
+    }, [counter, csrf_token, path]);
 
     // Function to handle toggling a post's edit_mode
     function handleEditModeChange(postId, value) {

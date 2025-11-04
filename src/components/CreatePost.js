@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 function CreatePost(props) {
     const current_user = props.current_user;

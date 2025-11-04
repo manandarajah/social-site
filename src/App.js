@@ -15,7 +15,7 @@ function App() {
 
   React.useEffect(() => {
 
-    //if (csrf_token) {
+    // if (csrf_token) {
       fetch('/api/current-user', {
         method: 'POST',
         headers: {
@@ -28,8 +28,8 @@ function App() {
       .then(res => res.json())
       .then(data => setCurrentUser(data))
       .catch(err => setCurrentUser(null));
-    //}
-  }, [false]);
+    // }
+  }, [csrf_token]);
 
   function getCsrfTokenFromCookie() {
     // Read the csrf_token cookie (the readable one)
