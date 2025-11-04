@@ -85,9 +85,9 @@ google-auth==2.40.3
 google-auth-httplib2==0.2.0
 google-auth-oauthlib==1.2.2
 googleapis-common-protos==1.70.0
-gradio==4.44.1
-gradio_client==1.3.0
-gradio_logsview @ https://huggingface.co/spaces/cocktailpeanut/gradio_logsview/resolve/main/gradio_logsview-0.0.17-py3-none-any.whl#sha256=c595d1ab65cc04b009b538652f64dcdb2e9d30491ee0ffc12f25101da5e77042
+# gradio==4.44.1
+# gradio_client==1.3.0
+# gradio_logsview @ https://huggingface.co/spaces/cocktailpeanut/gradio_logsview/resolve/main/gradio_logsview-0.0.17-py3-none-any.whl#sha256=c595d1ab65cc04b009b538652f64dcdb2e9d30491ee0ffc12f25101da5e77042
 grpcio==1.71.0
 gunicorn==23.0.0
 h11==0.16.0
@@ -134,7 +134,7 @@ markdown-it-py==3.0.0
 MarkupSafe==2.1.5
 marshmallow==3.26.1
 matplotlib==3.10.0
-matrix-client==0.4.0
+# matrix-client==0.4.0
 mdurl==0.1.2
 more-itertools==10.5.0
 mpmath==1.3.0
