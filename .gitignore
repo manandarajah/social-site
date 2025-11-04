@@ -23,7 +23,6 @@
 .env.production.local
 client_secret.json
 *.pdf
-aes.py
 encrypted_*.py
 secure_rsa*.py
 /collections
