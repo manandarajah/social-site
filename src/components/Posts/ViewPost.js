@@ -71,6 +71,9 @@ function ViewPost(props) {
                                 && new Date() - new Date(post.created_at) < minute) && (
                                 <span>{Math.floor((new Date() - new Date(post.created_at))/second)} seconds</span>
                             )}
+                            {new Date() - new Date(post.created_at) <= second && (
+                                <span>Just now</span>
+                            )}
                             <i className="bi bi-globe-americas"></i>
                         </div>
                     </div>
