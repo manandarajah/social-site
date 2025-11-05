@@ -7,7 +7,7 @@ from flask_login import LoginManager, login_user, logout_user, login_required, c
 from flask_resources import User
 from pymongo.errors import DuplicateKeyError
 from bson.objectid import ObjectId
-from db import get_db_users, get_db_posts, get_db_file
+from db import init_db, get_db_users, get_db_posts, get_db_file
 from aes import aes_oauth2callback, aes_verify_email, aes_send_registration_email, authorize, aes_send_forgot_password_email, aes_forgot_password, confirm_token
 from app_tasks import upload_file, validate_sanitize, validate_sanitize_bulk, is_direct_call
 from flask_limiter import Limiter
@@ -29,6 +29,8 @@ app.config['SESSION_COOKIE_SAMESITE'] = 'strict'
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 app.secret_key = secrets.token_hex(32)
+
+init_db()
 
 csp = {
     'frame-ancestors': 'none',
@@ -452,7 +454,7 @@ def create_account():
             }
 
             aes_send_registration_email(email, first_name)
-            
+
             users_collection.insert_one(user_doc)
         except Exception as e:
             return render_template('create-account.html', err=f'An error occurred while creating the account. {e}'), 500
