@@ -457,7 +457,7 @@ def create_account():
             
             users_collection.insert_one(user_doc)
         except Exception as e:
-            return render_template('create-account.html', err='An error occurred while creating the account.'), 500
+            return render_template('create-account.html', err=f'An error occurred while creating the account. {e}'), 500
 
         limiter.reset()
         return render_template('create-account.html', message='Check your email for the verification link'), 200
