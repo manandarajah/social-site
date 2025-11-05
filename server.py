@@ -117,6 +117,10 @@ def hash_password(password):
 def load_user(user_id):
     return User.get(user_id)
 
+@limiter.request_filter
+def exempt_render_requests():
+    return request.path in ['/health', '/favicon.ico']
+
 @app.after_request
 def generate_csrf_cookie(response):
 
