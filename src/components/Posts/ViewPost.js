@@ -46,7 +46,7 @@ function ViewPost(props) {
                             {post.first_name} {post.last_name}
                         </a>
                         <div className="text-muted" style={{ fontSize: '0.9rem' }}>
-                            {new Date(post.current_time) - new Date(post.created_at) > day && (
+                            {Date.now() - new Date(post.created_at).getTime() > day && (
                                 <span>{new Date(post.created_at).toDateString()}</span>
                             )}
                             {(Date.now() - new Date(post.created_at).getTime() > hour
