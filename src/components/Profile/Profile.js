@@ -2,6 +2,7 @@ import React from 'react';
 import ViewProfile from './ViewProfile';
 import EditProfile from './EditProfile';
 import Posts from '../Posts/Posts';
+import Navbar from '../Navbar';
 
 function Profile(props) {
     const csrf_token = props.get_cookie();
@@ -59,29 +60,32 @@ function Profile(props) {
     }
 
     return (
-        <div className="container mt-5" style={{ maxWidth: 600 }}>
-            <div className="card shadow-sm">
-                <div className="card-body">
-                    {update ? <EditProfile profile={profile} get_cookie={props.get_cookie} /> 
-                        : <ViewProfile profile={profile} />}
-                    {profile.current_user && !update && (
-                        <div className="d-flex flex-column align-items-center mb-4">
-                            <button type="button" className="btn btn-primary" onClick={() => setUpdate(true)}>
-                                Update
-                            </button>
-                        </div>
-                    )}
-                    {profile.current_user && update && (
-                        <div className="d-flex flex-column align-items-center mb-4">
-                            <button type="button" className="btn btn-light" onClick={() => setUpdate(false)}>
-                                Cancel
-                            </button>
-                        </div>
-                    )}
+        <div>
+            <Navbar current_user={profile} />
+            <div className="container mt-5" style={{ maxWidth: 600 }}>
+                <div className="card shadow-sm">
+                    <div className="card-body">
+                        {update ? <EditProfile profile={profile} get_cookie={props.get_cookie} /> 
+                            : <ViewProfile profile={profile} />}
+                        {profile.current_user && !update && (
+                            <div className="d-flex flex-column align-items-center mb-4">
+                                <button type="button" className="btn btn-primary" onClick={() => setUpdate(true)}>
+                                    Update
+                                </button>
+                            </div>
+                        )}
+                        {profile.current_user && update && (
+                            <div className="d-flex flex-column align-items-center mb-4">
+                                <button type="button" className="btn btn-light" onClick={() => setUpdate(false)}>
+                                    Cancel
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 </div>
+                <span>{profile.current_user ? "Your Activity:" : profile.first_name + "'s Activity:"}</span>
+                <Posts current_user={profile} get_cookie={props.get_cookie} />
             </div>
-            <span>{profile.current_user ? "Your Activity:" : profile.first_name + "'s Activity:"}</span>
-            <Posts current_user={profile} get_cookie={props.get_cookie} />
         </div>
     );
 }

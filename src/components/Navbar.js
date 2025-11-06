@@ -34,15 +34,17 @@ function Navbar(props) {
             <a className="navbar-brand fw-bold" href="/" style={{ fontSize: '1.7rem', color: '#1877f2' }}>
                 SocialBook
             </a>
-            <form className="d-none d-md-flex ms-3" role="search">
-                <input
-                    className="form-control me-2"
-                    type="search"
-                    placeholder="Search SocialBook"
-                    aria-label="Search"
-                    style={{ width: 250 }}
-                />
-            </form>
+            {window.location.pathname !== "/"+current_user.username && (
+                <form className="d-none d-md-flex ms-3" role="search">
+                    <input
+                        className="form-control me-2"
+                        type="search"
+                        placeholder="Search SocialBook"
+                        aria-label="Search"
+                        style={{ width: 250 }}
+                    />
+                </form>
+            )}
             <div className="ms-auto d-flex align-items-center position-relative">
                 <img
                     ref={profileImgRef}
