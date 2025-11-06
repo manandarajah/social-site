@@ -10,10 +10,6 @@ function ViewPost(props) {
     const hour = 3600000; //1 hour in milliseconds
     const day = 86400000; // 1 day in milliseconds
 
-    console.log("Created at: ", new Date(post.created_at).getTime())
-    console.log("Now: ", Date.now())
-    console.log("Diff: ", Date.now() - new Date(post.created_at).getTime())
-
     return (
         <div className="card mb-3 shadow-sm" key={post}>
             <div className="card-body">
