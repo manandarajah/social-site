@@ -123,13 +123,6 @@ def load_user(user_id):
 def exempt_render_requests():
     return request.path in ['/health', '/favicon.ico']
 
-@app.before_request
-def before_request():
-    
-    if 'posts' in request.path:
-        get_db_posts('write').update_many({}, {'$set': {'current_time': datetime.now(timezone.utc)}})
-        print('Updated posts')
-
 @app.after_request
 def generate_csrf_cookie(response):
 
@@ -767,8 +760,7 @@ def get_posts(username=None):
     
     for post in posts:
         post['_id'] = str(post['_id'])
-        post['created_at'] = post['created_at'].isoformat()
-        post['current_time'] = post['current_time'].isoformat()
+        post['created_at'] = post['created_at'].replace(tzinfo=timezone.utc).isoformat()
         post['attachment_id'] = str(post['attachment'])
         post['attachment'] = '/api/files/'+str(post['attachment']) if post['attachment'] is not None else post['attachment']
 
