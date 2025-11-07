@@ -59,8 +59,8 @@ Talisman(
     app, 
     frame_options='DENY', 
     content_security_policy=csp, 
-    force_https=False, 
-    session_cookie_secure=False, 
+    force_https=True, 
+    session_cookie_secure=True, 
     session_cookie_http_only=True
 )
 CORS(
