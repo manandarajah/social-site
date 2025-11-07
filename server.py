@@ -61,7 +61,7 @@ Talisman(
     content_security_policy=csp, 
     force_https=True, 
     session_cookie_secure=True, 
-    session_cookie_http_only=True
+    session_cookie_http_only=False
 )
 CORS(
     app, 
