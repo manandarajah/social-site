@@ -10,7 +10,7 @@ import Profile from './components/Profile/Profile';
 
 function App() {
 
-  const [currentUser, setCurrentUser] = React.useState({});
+  const [current_user, setCurrentUser] = React.useState({});
   const csrf_token = getCsrfTokenFromCookie();
 
   React.useEffect(() => {
@@ -47,21 +47,21 @@ function App() {
 
   return (
     <div>
-      {currentUser.is_verified && (
+      {current_user.is_verified && (
         <div className="bg-light" style={{ minHeight: '100vh' }}>
           {!path.endsWith("/") && <Profile get_cookie={getCsrfTokenFromCookie} />}
-          {path.endsWith("/") && <Navbar current_user={currentUser} get_cookie={getCsrfTokenFromCookie} />}
+          {path.endsWith("/") && <Navbar current_user={current_user} get_cookie={getCsrfTokenFromCookie} />}
           {path.endsWith("/") && (
             <div className="container-fluid mt-4">
               <div className="row">
-                <LeftSidebar current_user={currentUser}/>
-                <Feed current_user={currentUser} get_cookie={getCsrfTokenFromCookie} />
+                <LeftSidebar current_user={current_user}/>
+                <Feed current_user={current_user} get_cookie={getCsrfTokenFromCookie} />
                 <RightSidebar />
               </div>
             </div>
           )}
         </div>)}
-      {!currentUser.is_verified && (
+      {!current_user.is_verified && (
         <div>
           <span>Your account is not verified. Check your email and verify your account before you can use this app!</span><br/>
           <a href='/logout'>Click here to sign into a different account</a>

@@ -3,7 +3,7 @@ import ViewPost from './ViewPost';
 import EditPost from './EditPost';
 
 function Posts(props) {
-    const currentUser = props.current_user;
+    const current_user = props.current_user;
     const csrf_token = props.get_cookie();
     const [posts, setPosts] = React.useState([]);
     // const [loading, setLoading] = React.useState(true);
@@ -84,8 +84,8 @@ function Posts(props) {
     return (
         <div>
             {posts.map((post) => (
-                post.edit_mode ? <EditPost post={post} current_user={currentUser} edit={handleEditModeChange} delete={handleDeletePost} get_cookie={props.get_cookie} /> 
-                    : <ViewPost post={post} current_user={currentUser} edit={handleEditModeChange} delete={handleDeletePost} get_cookie={props.get_cookie} />
+                post.edit_mode ? <EditPost post={post} current_user={current_user} edit={handleEditModeChange} delete={handleDeletePost} get_cookie={props.get_cookie} /> 
+                    : <ViewPost post={post} current_user={current_user} edit={handleEditModeChange} delete={handleDeletePost} get_cookie={props.get_cookie} />
             ))}
         </div>
     )

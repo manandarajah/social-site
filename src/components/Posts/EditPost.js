@@ -4,7 +4,7 @@ import Dropdown from 'react-bootstrap/Dropdown';
 function EditPost(props) {
     const [post, setPost] = React.useState(props.post);
     const csrf_token = props.get_cookie();
-    const currentUser = props.current_user;
+    const current_user = props.current_user;
 
     // Handle input changes
     const handleChange = (e) => {
@@ -17,7 +17,7 @@ function EditPost(props) {
     return (
         <div className="card mb-3 shadow-sm" >
             <div className="card-body">
-                {currentUser.current_user && currentUser.username === post.username && (
+                {current_user.current_user && current_user.username === post.username && (
                     <Dropdown className="float-end">
                         <Dropdown.Toggle variant="success" className="btn btn-light" id="dropdown-basic">
                             ...

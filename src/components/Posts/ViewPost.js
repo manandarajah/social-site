@@ -3,7 +3,7 @@ import Dropdown from 'react-bootstrap/Dropdown';
 
 function ViewPost(props) {
     const post = props.post;
-    const currentUser = props.current_user;
+    const current_user = props.current_user;
     const csrf_token = props.get_cookie();
     const second = 1000; //1 second in milliseconds
     const minute = 60000; //1 minute in milliseconds
@@ -13,7 +13,7 @@ function ViewPost(props) {
     return (
         <div className="card mb-3 shadow-sm" key={post}>
             <div className="card-body">
-                {currentUser.current_user && currentUser.username === post.username && (
+                {current_user.current_user && current_user.username === post.username && (
                     <Dropdown className="float-end">
                         <Dropdown.Toggle variant="success" className="btn btn-light" id="dropdown-basic">
                             ...
