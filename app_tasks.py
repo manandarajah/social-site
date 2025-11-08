@@ -83,7 +83,7 @@ def validate_sanitize(value, pattern):
     # print(value+" "+pattern)
     # print(re.match(pattern, value))
     # print(bleach.clean(value))
-    return True if re.match(pattern, value) and bleach.clean(value) == value else False
+    return True if re.fullmatch(pattern, value) and bleach.clean(value) == value else False
 
 # Checks if URL call is direct call or referred call
 def is_direct_call():
