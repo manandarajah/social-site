@@ -59,16 +59,17 @@ def init_config(app, routes, blueprints):
     CORS(
         app, 
         supports_credentials=True, 
-        origins=['http://localhost:5000','http://127.0.0.1:5000'], 
+        # origins=['http://localhost:5000','http://127.0.0.1:5000'],
+        origins=['https://social-book-1x7x.onrender.com'], 
         allow_headers=['Content-Type', 'X-CSRF-Token', 'X-CSRFToken']
     )
     Talisman(
         app,
         frame_options='DENY', 
         content_security_policy=csp, 
-        force_https=False,
-        session_cookie_secure=False, 
-        session_cookie_http_only=True
+        force_https=True,
+        session_cookie_secure=True, 
+        session_cookie_http_only=False
     )
 
     login_manager.init_app(app)
