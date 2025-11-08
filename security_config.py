@@ -67,9 +67,9 @@ def init_config(app, routes, blueprints):
         app,
         frame_options='DENY', 
         content_security_policy=csp, 
-        force_https=True,
+        force_https=False, # Hosted on render.com, which forces all HTTP connections to HTTPS, eliminating the need to configure force_http
         session_cookie_secure=True, 
-        session_cookie_http_only=False
+        session_cookie_http_only=True
     )
 
     login_manager.init_app(app)
