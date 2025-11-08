@@ -34,8 +34,6 @@ def config_app():
     init_config(app, routes, blueprints)
     init_db()
 
-config_app()
-
 # Serve React App
 @app.route('/')
 @app.route('/<string:name>', methods=['GET'])
@@ -53,6 +51,8 @@ def serve(name=None):
     else:
         return send_from_directory(app.static_folder, 'index.html')
     # return ''
+
+config_app()
 
 # Example API endpoint
 @app.route('/api/hello')
