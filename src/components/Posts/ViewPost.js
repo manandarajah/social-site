@@ -4,6 +4,7 @@ import Comments from './Comments/Comments';
 
 function ViewPost(props) {
     const post = props.post;
+    const time_diff = Date.now() - new Date(post.created_at).getTime();
     const current_user = props.current_user;
     const csrf_token = props.get_cookie();
     const second = 1000; //1 second in milliseconds
@@ -43,22 +44,19 @@ function ViewPost(props) {
                             {post.first_name} {post.last_name}
                         </a>
                         <div className="text-muted" style={{ fontSize: '0.9rem' }}>
-                            {Date.now() - new Date(post.created_at).getTime() > day && (
+                            {time_diff > day && (
                                 <span>{new Date(post.created_at).toDateString()}</span>
                             )}
-                            {(Date.now() - new Date(post.created_at).getTime() > hour
-                                && Date.now() - new Date(post.created_at).getTime() < day) && (
-                                <span>{Math.floor((Date.now() - new Date(post.created_at).getTime())/hour)} hours</span>
+                            {(time_diff > hour && time_diff < day) && (
+                                <span>{Math.floor((time_diff) / hour)} hours</span>
                             )}
-                            {(Date.now() - new Date(post.created_at).getTime() > minute
-                                && Date.now() - new Date(post.created_at).getTime() < hour) && (
-                                <span>{Math.floor((Date.now() - new Date(post.created_at).getTime())/minute)} minutes</span>
+                            {(time_diff > minute && time_diff < hour) && (
+                                <span>{Math.floor((time_diff) / minute)} minutes</span>
                             )}
-                            {(Date.now() - new Date(post.created_at).getTime() > second
-                                && Date.now() - new Date(post.created_at).getTime() < minute) && (
-                                <span>{Math.floor((Date.now() - new Date(post.created_at).getTime())/second)} seconds</span>
+                            {(time_diff > second && time_diff < minute) && (
+                                <span>{Math.floor((time_diff) / second)} seconds</span>
                             )}
-                            {Date.now() - new Date(post.created_at).getTime() <= second && (
+                            {time_diff <= second && (
                                 <span>Just now</span>
                             )}
                             <i className="bi bi-globe-americas"></i>
