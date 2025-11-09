@@ -316,6 +316,7 @@ def get_posts(username=None):
         comment['profile_picture'] = profile['profile_picture']
         comment['content'] = comment['content'].decode('utf-8')
 
-        posts[idx]['comments'][i] = comment
+        if i in posts[idx]['comments']:
+            posts[idx]['comments'][i] = comment
 
     return jsonify({'posts': posts})
