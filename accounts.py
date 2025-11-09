@@ -1,5 +1,5 @@
 from bson.objectid import ObjectId
-from flask import Blueprint, jsonify, redirect, request, render_template, url_for
+from flask import jsonify, redirect, request, render_template, url_for
 from pymongo.errors import DuplicateKeyError
 from flask_login import login_required, current_user, login_user, logout_user
 from aes import aes_forgot_password, aes_send_forgot_password_email, aes_send_registration_email, aes_verify_email, confirm_token
@@ -11,7 +11,6 @@ from security_config import hash_password, limiter, regenerate_session
 import hashlib
 import binascii
 
-acc_bp = Blueprint('acc', __name__)
 context = None;
 
 def config_app(app):
@@ -333,7 +332,6 @@ def get_profile(username):
 
     return user
 
-@acc_bp.route('/logout', methods=['POST'])
 @limiter.exempt
 def logout():
     if is_direct_call():

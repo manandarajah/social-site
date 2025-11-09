@@ -1,8 +1,6 @@
-from flask import Blueprint, make_response
+from flask import make_response
 from bson.objectid import ObjectId
 from db import get_db_file
-
-res_bp = Blueprint('res', __name__)
 
 def get_routes():
     return [('/api/files/<file_id>', 'serve_file', serve_file, ['GET'])]

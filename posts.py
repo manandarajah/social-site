@@ -1,5 +1,5 @@
 from bson.objectid import ObjectId
-from flask import Blueprint, jsonify, redirect, request
+from flask import jsonify, redirect, request
 from werkzeug.routing import IntegerConverter
 from accounts import get_profile
 from flask_login import login_required, current_user
@@ -10,7 +10,6 @@ from app_tasks import is_direct_call, upload_file, validate_sanitize
 from db import get_db_file, get_db_posts
 import base64
 
-posts_bp = Blueprint('posts', __name__)
 context = None
 
 def config_app(app):

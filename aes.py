@@ -1,4 +1,4 @@
-from flask import Blueprint, request, url_for, redirect, jsonify, session, flash
+from flask import request, url_for, redirect, jsonify, session, flash
 from dotenv import load_dotenv
 from db import get_db_users
 from cryptography.fernet import Fernet
@@ -32,11 +32,14 @@ CLIENT_SECRET = os.environ.get('CLIENT_SECRET')
 CLIENT_SECRETS_FILE = os.environ.get('CLIENT_SECRETS_FILE')
 TOKEN_EXPIRATION_SECONDS = 900  # 15 minutes
 
-email_bp = Blueprint('email', __name__)
+def get_routes():
+    return [
+        ('/oauth2callback', 'oauth2callback', oauth2callback, ['GET'])
+    ]
 
 def authorize():
     flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(CLIENT_SECRETS_FILE, scopes=SCOPES)
-    flow.redirect_uri = url_for('oauth2callback', _external=True)
+    flow.redirect_uri = url_for('sec.oauth2callback', _external=True)
 
     authorization_url, state = flow.authorization_url(access_type='offline',include_granted_scopes='true',prompt='consent')
     print(authorization_url)
@@ -46,12 +49,11 @@ def authorize():
 
     return redirect(authorization_url)
 
-@email_bp.route('/oauth2callback')
 def oauth2callback():
     state = session['state']
 
     flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(CLIENT_SECRETS_FILE, scopes=SCOPES, state=state)
-    flow.redirect_uri = url_for('oauth2callback', _external=True)
+    flow.redirect_uri = url_for('sec.oauth2callback', _external=True)
 
     # Use the authorization server's response to fetch the OAuth 2.0 tokens.
     auth_response = request.url
