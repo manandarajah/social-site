@@ -1,5 +1,6 @@
 import React from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
+import Comments from './Comments/Comments';
 
 function ViewPost(props) {
     const post = props.post;
@@ -38,7 +39,7 @@ function ViewPost(props) {
                         height="40"
                     />
                     <div>
-                        <a href={post.url} className="fw-semibold">
+                        <a href={post.profile_url} className="fw-semibold">
                             {post.first_name} {post.last_name}
                         </a>
                         <div className="text-muted" style={{ fontSize: '0.9rem' }}>
@@ -77,14 +78,30 @@ function ViewPost(props) {
                     <button className="btn btn-light flex-fill me-1">
                         <i className="bi bi-hand-thumbs-up me-1"></i> Like
                     </button>
-                    <button className="btn btn-light flex-fill me-1">
-                        <i className="bi bi-chat-left-text me-1"></i> Comment
-                    </button>
                     <button className="btn btn-light flex-fill">
                         <i className="bi bi-share me-1"></i> Share
                     </button>
                 </div>
+                <Comments post={post} current_user={current_user} get_cookie={props.get_cookie} />
             </div>
+            <form className="d-flex justify-content-between bg-secondary-subtle p-2" method="post" action='/comment-post'>
+                <img
+                    src={current_user.profile_picture}
+                    alt="User"
+                    className="rounded-circle me-2"
+                    width="40"
+                    height="40"
+                />
+                <input
+                    type="text"
+                    className="form-control rounded-pill"
+                    name="content"
+                    placeholder="Post comment here"
+                />
+                <input type="submit" className="btn btn-primary d-flex align-items-center rounded-circle mx-2" value="P" />
+                <input type="hidden" name="id" value={post._id} />
+                <input type="hidden" name="csrf_token" value={csrf_token} />
+            </form>
         </div>
     )
 }

@@ -15,7 +15,7 @@ function App() {
 
   React.useEffect(() => {
 
-    // if (csrf_token) {
+    //if (csrf_token) {
       fetch('/api/current-user', {
         method: 'POST',
         headers: {
@@ -28,8 +28,8 @@ function App() {
       .then(res => res.json())
       .then(data => setCurrentUser(data))
       .catch(err => setCurrentUser(null));
-    // }
-  }, [csrf_token]);
+    //}
+  }, [false]);
 
   function getCsrfTokenFromCookie() {
     // Read the csrf_token cookie (the readable one)
@@ -49,7 +49,7 @@ function App() {
     <div>
       {current_user.is_verified && (
         <div className="bg-light" style={{ minHeight: '100vh' }}>
-          {!path.endsWith("/") && <Profile get_cookie={getCsrfTokenFromCookie} />}
+          {!path.endsWith("/") && <Profile current_user={current_user} get_cookie={getCsrfTokenFromCookie} />}
           {path.endsWith("/") && <Navbar current_user={current_user} get_cookie={getCsrfTokenFromCookie} />}
           {path.endsWith("/") && (
             <div className="container-fluid mt-4">
