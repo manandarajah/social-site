@@ -45,6 +45,8 @@ function Posts(props) {
                         return comment;
                     });
                 }
+
+                return post;
             });
 
             setPosts(data.posts);
@@ -55,7 +57,7 @@ function Posts(props) {
             // setLoading(false);
             console.log(`Delete failed: ${err.message}`);
         });
-    }, []);
+    }, [csrf_token, path, post_counter]);
 
     // Function to handle toggling a post's edit_mode
     function handleEditModeChange(postId, value) {

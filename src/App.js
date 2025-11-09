@@ -29,7 +29,7 @@ function App() {
       .then(data => setCurrentUser(data))
       .catch(err => setCurrentUser(null));
     //}
-  }, [false]);
+  }, [csrf_token]);
 
   function getCsrfTokenFromCookie() {
     // Read the csrf_token cookie (the readable one)
