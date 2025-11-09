@@ -134,7 +134,7 @@ def aes_send_registration_email(email, first_name):
         # Token Serializer
         s = URLSafeTimedSerializer(CLIENT_SECRET)
         token = s.dumps(email, salt="email-confirm")
-        verify_url = url_for("verify_email", token=token, _external=True)
+        verify_url = url_for("sec.verify_email", token=token, _external=True)
 
         gmail = build(API_SERVICE, API_VERSION, credentials=credentials)
 

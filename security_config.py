@@ -1,5 +1,5 @@
 from flask import Blueprint, session, request
-from flask_login import LoginManager, current_user
+from flask_login import current_user
 from flask_wtf.csrf import CSRFProtect, generate_csrf
 from flask_cors import CORS
 from flask_session import Session
@@ -12,7 +12,8 @@ import binascii
 
 sec_bp = Blueprint('sec', __name__)
 
-res_hash = None
+res_hash_1 = None
+res_hash_2 = None
 
 limiter = Limiter(
     key_func=get_remote_address,
@@ -31,21 +32,22 @@ def init_config(app, routes, blueprints):
     # print(new_secrets)
     app.secret_key = os.environ.get('SECRETS')
 
-    global res_hash
-    res_hash = os.environ.get('RES_HASH')
+    global res_hash_1, res_hash_2
+    res_hash_1 = os.environ.get('RES_HASH_1')
+    res_hash_2 = os.environ.get('RES_HASH_2')
 
     csp = {
         'frame-ancestors': 'none',
         'default-src': ["'self'"],
         'script-src': [
             "'self'",
-            f"'{res_hash}'",
-            'https://cdn.jsdelivr.net',
+            f"'{res_hash_1}' '{res_hash_2}'",
+            'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css',
             'https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js'
         ],
         'style-src': [
             "'self'",
-            f"'{res_hash}'",
+            f"'{res_hash_1}' '{res_hash_2}'",
             'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css',
             'https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css'
         ],
@@ -56,14 +58,14 @@ def init_config(app, routes, blueprints):
     CORS(
         app, 
         supports_credentials=True, 
-        origins=['http://localhost:5000','http://127.0.0.1:5000'],
+        origins=['http://localhost:5000','http://127.0.0.1:5000'], 
         allow_headers=['Content-Type', 'X-CSRF-Token', 'X-CSRFToken']
     )
     Talisman(
         app,
         frame_options='DENY', 
         content_security_policy=csp, 
-        force_https=False, # Hosted on render.com, which forces all HTTP connections to HTTPS, eliminating the need to configure force_http
+        force_https=False, 
         session_cookie_secure=True, 
         session_cookie_http_only=True
     )
@@ -81,10 +83,6 @@ def init_config(app, routes, blueprints):
 
 # Regenerate session for logged-in user
 def regenerate_session(app):
-    # print("session_interface:", type(app.session_interface))
-    # print("has regenerate:", hasattr(app.session_interface, "regenerate"))
-    # print("dir(session_interface):", [n for n in dir(app.session_interface) if not n.startswith("_")])
-    
     session.clear()
 
     if hasattr(current_user, 'id'):
@@ -105,7 +103,7 @@ def exempt_render_requests():
 
 @limiter.request_filter
 def exempt_api_requests():
-    return 'logout' in request.path or (hasattr(current_user, 'id') and current_user.is_authenticated and current_user.is_active)
+    return hasattr(current_user, 'id') and current_user.is_authenticated and current_user.is_active
 
 @limiter.request_filter
 def exempt_reloads():
@@ -154,8 +152,8 @@ def set_security_headers(response):
     response.headers['Content-Security-Policy'] = (
         "frame-ancestors 'none';"
         "default-src 'self'; "
-        f"style-src 'self' '{res_hash}' https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css; "
-        f"script-src 'self' '{res_hash}' https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js;"                             
+        f"style-src 'self' '{res_hash_1}' '{res_hash_2}' https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css; "
+        f"script-src 'self' '{res_hash_1}' '{res_hash_2}' https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js;"                             
     )
     
     return response
