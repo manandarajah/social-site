@@ -29,9 +29,7 @@ def config_app():
     routes.extend(acc.get_routes())
     routes.extend(posts.get_routes())
 
-    blueprints = [acc.acc_bp, posts.posts_bp, res.res_bp]
-
-    init_config(app, routes, blueprints)
+    init_config(app, routes)
     init_db()
 
 # Serve React App

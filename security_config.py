@@ -22,7 +22,7 @@ limiter = Limiter(
     storage_uri="memory://localhost:6379"
 )
 
-def init_config(app, routes, blueprints):
+def init_config(app, routes):
     app.config['SESSION_USE_SIGNER'] = True
     app.config['SESSION_KEY_PREFIX'] = 'session:'
     app.config["SESSION_PERMANENT"] = True     # Sessions expire when the browser is closed
@@ -76,9 +76,6 @@ def init_config(app, routes, blueprints):
     # Add all app-level routes from server.py as blueprint routes
     for rule, endpoint, view_func, methods in routes:
         sec_bp.add_url_rule(rule, endpoint=endpoint, view_func=view_func, methods=methods)
-
-    for bp in blueprints:
-        app.register_blueprint(bp)
 
     app.register_blueprint(sec_bp)
 
