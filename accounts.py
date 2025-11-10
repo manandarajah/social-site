@@ -55,8 +55,8 @@ def login():
                 '$or': [
                     {'username': {"$eq": identifier}},
                     {'email': {"$eq": identifier}}
-                ]
-            })
+                ]}, {'username': 1, 'password_hash': 1}
+            )
 
             if not user:
                 return render_template('login-form.html', err='Invalid username/email or password'), 401
@@ -98,7 +98,7 @@ def forgot_password():
         if not validate_sanitize(email, EMAIL_REGEX):
             return render_template('forgot-password.html', err='Invalid email address'), 400
 
-        user = get_db_users('read').find_one({'email': {"$eq": email}})
+        user = get_db_users('read').find_one({'email': {"$eq": email}}, {'first_name': 1})
 
         if not user:
             return render_template('forgot-password.html', err='No account associated with this email address'), 400

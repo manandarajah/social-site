@@ -10,6 +10,8 @@ altair==4.2.2
 annotated-types==0.7.0
 antlr4-python3-runtime==4.9.3
 anyio==4.9.0
+argon2-cffi==25.1.0
+argon2-cffi-bindings==25.1.0
 asttokens==3.0.0
 attrs==25.3.0
 auto_subtitle @ git+https://github.com/m1guelpf/auto-subtitle.git@124ccb1ac17d5b7a27dd81b3d8f8fed6ef1a5408
