@@ -61,12 +61,13 @@ function App() {
             </div>
           )}
         </div>)}
-      {!current_user.is_verified && (
-        <div>
-          <span>Your account is not verified. Check your email and verify your account before you can use this app!</span><br/>
-          <a href='/logout'>Click here to sign into a different account</a>
-        </div>
-      )}
+        {!current_user.is_verified && (
+          <form action="/logout" method="POST">
+            <span>Your account is not verified. Check your email and verify your account before you can use this app!</span><br/>
+            <button type="submit" className="btn btn-link p-0">Click here to sign into a different account</button>
+            <input type="hidden" name="csrf_token" value={csrf_token} />
+          </form>
+        )}
     </div>
   );
 }

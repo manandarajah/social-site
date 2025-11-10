@@ -119,7 +119,7 @@ def aes_send_registration_email(email, first_name):
     try:
         cipher = Fernet(KEY.encode())
         users_collection = get_db_users('read')
-        user = users_collection.find_one({'username': {"$eq": ADMIN_NAME}})
+        user = users_collection.find_one({'username': {"$eq": ADMIN_NAME}}, {'creds': 1})
         creds = user['creds']
 
         # Load credentials from the session.
