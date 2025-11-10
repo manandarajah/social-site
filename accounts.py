@@ -108,7 +108,7 @@ def forgot_password():
     else:
         token = request.args.get('token')
         if token and aes_forgot_password(token):
-            return redirect(url_for('acc.reset_password', token=token))
+            return redirect(url_for('sec.reset_password', token=token))
         else:
             return render_template('forgot-password.html')
 
