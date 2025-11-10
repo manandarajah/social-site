@@ -61,7 +61,7 @@ function Profile(props) {
 
     return (
         <div>
-            <Navbar current_user={profile} get_cookie={props.get_cookie} />
+            <Navbar current_user={props.current_user} get_cookie={props.get_cookie} />
             <div className="container mt-5" style={{ maxWidth: 600 }}>
                 <div className="card shadow-sm">
                     <div className="card-body">
