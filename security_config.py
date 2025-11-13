@@ -135,3 +135,15 @@ def cache_headers(response):
     response.headers['Expires'] = '0'
     
     return response
+
+@sec_bp.after_request
+def add_security_headers(response):
+    # Only enforce strict isolation in production
+    if os.environ.get('FLASK_ENV') == 'production':
+        response.headers['Cross-Origin-Embedder-Policy'] = 'require-corp'
+    else:
+        response.headers['Cross-Origin-Embedder-Policy'] = 'credentialless'
+    
+    response.headers['Cross-Origin-Opener-Policy'] = 'same-origin'
+    
+    return response
