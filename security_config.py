@@ -50,6 +50,7 @@ def init_config(app, routes):
             'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css',
             'https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css'
         ],
+        'form-action': ["'self'"]
     }
     
     Session(app)
@@ -120,7 +121,7 @@ def generate_csrf_cookie(response):
         token,
         httponly=False,     # JavaScript can read this
         samesite='Strict',  # Same protection
-        secure=False,       # Set to True in production with HTTPS
+        secure=True,       # Set to True in production with HTTPS
         max_age=3600
     )
     
