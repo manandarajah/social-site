@@ -139,7 +139,7 @@ def delete_post():
         if result.deleted_count == 0:
             return jsonify({'error': 'Post not found or forbidden'}), 403
     except Exception as e:
-        return jsonify({'error': f'Error while deleting post: {str(e)}'}), 500
+        return jsonify({'error': f'Error while deleting post'}), 500
 
     regenerate_session(context)
     return redirect('/')
@@ -234,7 +234,7 @@ def update_comment():
             return jsonify({'error': 'Comment not found or forbidden'}), 403
 
     except Exception as e:
-        return jsonify({'error': f'Error updating comment: {str(e)}'}), 500
+        return jsonify({'error': f'Error updating comment'}), 500
 
     regenerate_session(context)
     return redirect('/')
@@ -275,7 +275,7 @@ def delete_comment():
             {'$pull': {'comments': None}}
         )
     except Exception as e:
-        return jsonify({'error': f'Error deleting comment: {str(e)}'}), 500
+        return jsonify({'error': f'Error deleting comment'}), 500
 
     regenerate_session(context)
     return redirect('/')

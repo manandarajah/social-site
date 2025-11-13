@@ -75,7 +75,7 @@ def login():
                 hash = ph.hash(password)
                 get_db_users('write').update_one({'username': {'$eq': current_user.id}}, {'$set': {'password_hash': hash}})
         except Exception as e:
-            return render_template('login-form.html', err=f'An error occurred during login: {e}'), 500
+            return render_template('login-form.html', err=f'An error occurred during login'), 500
 
         return redirect('/')
     else:
@@ -206,7 +206,7 @@ def create_account():
             aes_send_registration_email(email, first_name)
             users_collection.insert_one(user_doc)
         except Exception as e:
-            return render_template('create-account.html', err=f'An error occurred while creating the account. {e}'), 500
+            return render_template('create-account.html', err=f'An error occurred while creating the account.'), 500
 
         return render_template('create-account.html', message='Check your email for the verification link'), 200
     else:
@@ -290,7 +290,7 @@ def update_account():
     except DuplicateKeyError:
         return jsonify({'error': 'Username already taken'}), 409
     except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
+        return jsonify({'success': False, 'error': 'Error in updating account'}), 500
 
     if new_username:
         current_user.id = new_username
