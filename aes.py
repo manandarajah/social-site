@@ -15,6 +15,13 @@ import google.auth
 import google_auth_oauthlib.flow
 import requests
 
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
 API_SERVICE="gmail"
 API_VERSION="v1"
 SCOPES = [
@@ -25,11 +32,27 @@ SCOPES = [
 
 load_dotenv()
 
+# Load and validate required environment variables
 ADMIN_NAME = os.environ.get('ADMIN_NAME')
+if not ADMIN_NAME:
+    raise ValueError("ADMIN_NAME environment variable is required")
+
 KEY = os.environ.get('ENCRYPTED_KEY')
+if not KEY:
+    raise ValueError("ENCRYPTED_KEY environment variable is required")
+
 CLIENT_ID = os.environ.get('CLIENT_ID')
+if not CLIENT_ID:
+    raise ValueError("CLIENT_ID environment variable is required")
+
 CLIENT_SECRET = os.environ.get('CLIENT_SECRET')
+if not CLIENT_SECRET:
+    raise ValueError("CLIENT_SECRET environment variable is required")
+
 CLIENT_SECRETS_FILE = os.environ.get('CLIENT_SECRETS_FILE')
+if not CLIENT_SECRETS_FILE:
+    raise ValueError("CLIENT_SECRETS_FILE environment variable is required")
+
 TOKEN_EXPIRATION_SECONDS = 900  # 15 minutes
 
 def get_routes():
@@ -66,8 +89,9 @@ def oauth2callback():
     return ''
 
 def credentials_to_dict(credentials):
-    key = Fernet.generate_key()
-    cipher = Fernet(key)
+    # Use the KEY from environment instead of generating a new one each time
+    # This ensures credentials can be decrypted later
+    cipher = Fernet(KEY.encode())
 
     return {
         'token': cipher.encrypt(credentials.token.encode()).decode(),
@@ -77,15 +101,27 @@ def credentials_to_dict(credentials):
     }
 
 def confirm_token(token, expiration=TOKEN_EXPIRATION_SECONDS):
-    # Validate the token and extract the email if valid.
+    """
+    Validate the token and extract the email if valid.
+    
+    Args:
+        token: The token to validate
+        expiration: Token expiration time in seconds
+        
+    Returns:
+        The email address if valid, False otherwise
+    """
     try:
         s = URLSafeTimedSerializer(CLIENT_SECRET)
         return s.loads(token, salt="email-confirm", max_age=expiration)
     except SignatureExpired:
-        logging.warning("Verification token expired. Ask the user to request a new verification email.")
+        logger.warning("Verification token expired.")
         return False
     except BadSignature:
-        logging.warning("Invalid verification token.")
+        logger.warning("Invalid verification token.")
+        return False
+    except Exception as e:
+        logger.error(f"Unexpected error validating token: {str(e)}")
         return False
 
 def aes_verify_email(token):
@@ -116,10 +152,25 @@ def aes_forgot_password(token):
     return True
 
 def aes_send_registration_email(email, first_name):
+    """
+    Send a registration verification email to the user.
+    
+    Args:
+        email: User's email address
+        first_name: User's first name
+        
+    Returns:
+        True if successful, False otherwise
+    """
     try:
         cipher = Fernet(KEY.encode())
         users_collection = get_db_users('read')
         user = users_collection.find_one({'username': {"$eq": ADMIN_NAME}}, {'creds': 1})
+        
+        if not user or 'creds' not in user:
+            logger.error("Cannot send registration email. No gmail creds found.")
+            return False
+            
         creds = user['creds']
 
         # Load credentials from the session.
@@ -148,38 +199,40 @@ def aes_send_registration_email(email, first_name):
         message['Subject'] = "Verify Email - Social Book"
 
         # encoded message
-        encoded_message = base64.urlsafe_b64encode(message.as_bytes()) \
-            .decode()
+        encoded_message = base64.urlsafe_b64encode(message.as_bytes()).decode()
 
         create_message = {
             'raw': encoded_message
         }
-        # pylint: disable=E1101
+        
         send_message = (gmail.users().messages().send
                         (userId="me", body=create_message).execute())
-        print(F'Message Id: {send_message["id"]}')
-        # return requests.post(
-        #     "https://api.mailgun.net/v3/mg.socialmedia.com/messages",
-        #     auth=("api", CLIENT_SECRET),
-        #     data={"from": "Dating Social Media <no-reply@mg.socialmedia.com>",
-        #         "to": email,
-        #         "subject": "Verify Email - Dating Social Media",
-        #         "template": create_message}
-        # )
+        logger.info(f'Registration email sent. Message Id: {send_message["id"]}')
+        return True
     except HttpError as error:
-        print(F'An error occurred: {error}')
-        send_message = None
+        logger.error(f'HTTP error occurred sending registration email: {error}')
+        return False
+    except Exception as error:
+        logger.error(f'Unexpected error occurred sending registration email: {error}')
+        return False
 
 def aes_send_forgot_password_email(email, first_name):
     """
-    Sends a forgot password email with a reset link to the specified user's email address.
+    Send a password reset email with a reset link to the specified user's email address.
+    
+    Args:
+        email: User's email address
+        first_name: User's first name
+        
+    Returns:
+        True if successful, False otherwise
     """
     try:
         # Load user credentials for Gmail API
         cipher = Fernet(KEY.encode())
         user = get_db_users('read').find_one({'username': {"$eq": ADMIN_NAME}})
         if not user or 'creds' not in user:
-            print("Cannot send reset email. No gmail creds found for email: " + email)
+            logger.error("Cannot send reset email. No gmail creds found for email: " + email)
             return False
 
         creds = user['creds']
@@ -216,8 +269,11 @@ def aes_send_forgot_password_email(email, first_name):
 
         create_message = {'raw': encoded_message}
         send_message = gmail.users().messages().send(userId="me", body=create_message).execute()
-        print(f"Password reset email sent. Message Id: {send_message['id']}")
+        logger.info(f"Password reset email sent. Message Id: {send_message['id']}")
         return True
+    except HttpError as error:
+        logger.error(f"HTTP error occurred sending password reset email: {error}")
+        return False
     except Exception as error:
-        print(f"An error occurred sending password reset email: {error}")
+        logger.error(f"Unexpected error occurred sending password reset email: {error}")
         return False

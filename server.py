@@ -37,18 +37,10 @@ def config_app():
 @app.route('/<string:name>', methods=['GET'])
 @limiter.exempt
 def serve(name=None):
-    # user = get_db_users().find_one({'username':ADMIN_NAME})
-
-    # if user['creds'] is None:
-    # authorize()
-
-    # logout()
-
     if not current_user.is_authenticated:
         return redirect(url_for("sec.login"))
     else:
         return send_from_directory(app.static_folder, 'index.html')
-    # return ''
 
 config_app()
 

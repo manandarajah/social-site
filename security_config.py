@@ -101,31 +101,18 @@ def exempt_reloads():
 
 @sec_bp.after_request
 def generate_csrf_cookie(response):
-
     token = generate_csrf()
-    # signed_token = create_signed_token(token, app)
     
-    # Cookie 1: HttpOnly cookie with signed token (JavaScript CANNOT read this)
-    # response.set_cookie(
-    #     'csrf_token_signed',
-    #     signed_token,
-    #     httponly=True,      # JavaScript cannot access this
-    #     samesite='Strict',  # Strict prevents CSRF attacks
-    #     secure=False,       # Set to True in production with HTTPS
-    #     max_age=3600        # 1 hour
-    # )
-    
-    # Cookie 2: Regular cookie with token (JavaScript CAN read this)
+    # Cookie with token that JavaScript can read for form submissions
     response.set_cookie(
         'csrf_token',
         token,
         httponly=False,     # JavaScript can read this
-        samesite='Strict',  # Same protection
-        secure=True,       # Set to True in production with HTTPS
+        samesite='Strict',  # Prevents CSRF attacks
+        secure=True,        # Only sent over HTTPS
         max_age=3600
     )
     
-    # return jsonify({'message':'Generated and Signed CSRF token'})
     return response
 
 @sec_bp.after_request

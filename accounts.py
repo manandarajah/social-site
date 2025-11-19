@@ -9,6 +9,14 @@ from app_tasks import is_direct_call, upload_file, validate_sanitize, validate_s
 from db import get_db_file, get_db_posts, get_db_users
 from regexes import PASS_REGEX, EMAIL_REGEX, TEXT_REGEX, LEGAL_TEXT_REGEX, GEN_REGEX, DATE_REGEX
 from security_config import limiter, regenerate_session
+import logging
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 context = None
 ph = PasswordHasher()
@@ -31,11 +39,18 @@ def get_routes():
     ]
 
 def login():
+    """
+    Handle user login with username/email and password.
+    
+    Returns:
+        Redirect to home on success, login form with error on failure
+    """
     if request.method == 'POST':
         data = request.form
         token = data.get('csrf_token')
-        identifier = data.get('loginName').lower()
-        password = data.get('loginPassword')
+        identifier = data.get('loginName', '').lower()
+        password = data.get('loginPassword', '')
+        
         data_list = [
             {
                 'input': identifier,
@@ -48,6 +63,7 @@ def login():
         ]
 
         if not validate_sanitize_bulk(data_list, 'input'):
+            logger.warning(f"Login attempt with invalid input format")
             return render_template('login-form.html', err='Invalid username/email or password'), 401
 
         try:
@@ -59,14 +75,16 @@ def login():
             )
 
             if not user:
+                logger.warning(f"Login attempt for non-existent user")
                 return render_template('login-form.html', err='Invalid username/email or password'), 401
 
             hash = user['password_hash']
 
             if not ph.verify(hash, password):
+                logger.warning(f"Failed login attempt for user: {user.get('username')}")
                 return render_template('login-form.html', err='Invalid username/email or password'), 401
 
-            print("Login successful!")
+            logger.info(f"User logged in successfully: {user.get('username')}")
             user_obj = User(user.get('username'))
             login_user(user_obj)
             regenerate_session(context)
@@ -75,7 +93,8 @@ def login():
                 hash = ph.hash(password)
                 get_db_users('write').update_one({'username': {'$eq': current_user.id}}, {'$set': {'password_hash': hash}})
         except Exception as e:
-            return render_template('login-form.html', err=f'An error occurred during login'), 500
+            logger.error(f"Error during login: {str(e)}")
+            return render_template('login-form.html', err='An error occurred during login'), 500
 
         return redirect('/')
     else:
@@ -88,7 +107,15 @@ def login():
             message = None
         return render_template('login-form.html', display='d-none' if message is None else '', message=message)
 
+@limiter.limit("5 per hour")
 def forgot_password():
+    """
+    Handle forgot password requests.
+    Rate limited to 5 requests per hour to prevent abuse.
+    
+    Returns:
+        Password reset form or success message
+    """
     if request.method == 'POST':
         email = request.form.get('email', '').strip().lower()
         token = request.form.get('csrf_token').strip()
@@ -147,19 +174,25 @@ def reset_password():
     return render_template('reset-password.html', token=token)
 
 def create_account():
+    """
+    Handle user account creation.
+    
+    Returns:
+        Success message on account creation, error message on failure
+    """
     if request.method == 'POST':
         users_collection = get_db_users('write')
         data = request.form
         token = data.get('csrf_token')
-        username = data.get('username').lower()
-        email = data.get('email').lower()
-        password = data.get('password')
-        confirm_password = data.get('confirm_password')
-        first_name = data.get('first_name')
-        last_name = data.get('last_name')
-        gender = data.get('gender')
-        birthday = data.get('birthday')
-        profile_picture = request.files['profile_picture'] if request.content_type.startswith('multipart/form-data') else None
+        username = data.get('username', '').lower()
+        email = data.get('email', '').lower()
+        password = data.get('password', '')
+        confirm_password = data.get('confirm_password', '')
+        first_name = data.get('first_name', '')
+        last_name = data.get('last_name', '')
+        gender = data.get('gender', '')
+        birthday = data.get('birthday', '')
+        profile_picture = request.files.get('profile_picture') if request.content_type.startswith('multipart/form-data') else None
 
         data_list = [
             {'input': username, 'pattern': TEXT_REGEX},
@@ -179,9 +212,11 @@ def create_account():
             return render_template('create-account.html', err='Passwords do not match'), 400
 
         if not validate_sanitize_bulk(data_list, 'input'):
+            logger.warning("Account creation attempt with invalid input")
             return render_template('create-account.html', err='Invalid input'), 400
 
         if users_collection.find_one({'$or': [{'username': {"$eq": username}}, {'email': {"$eq": email}}]}):
+            logger.warning(f"Account creation attempt with existing username/email: {username}")
             return render_template('create-account.html', err='Username or email already exists'), 400
 
         password_hash = ph.hash(password)
@@ -205,8 +240,10 @@ def create_account():
 
             aes_send_registration_email(email, first_name)
             users_collection.insert_one(user_doc)
+            logger.info(f"New account created: {username}")
         except Exception as e:
-            return render_template('create-account.html', err=f'An error occurred while creating the account.'), 500
+            logger.error(f"Error creating account: {str(e)}")
+            return render_template('create-account.html', err='An error occurred while creating the account.'), 500
 
         return render_template('create-account.html', message='Check your email for the verification link'), 200
     else:
@@ -217,6 +254,12 @@ def verify_email(token):
 
 @login_required
 def update_account():
+    """
+    Handle user account updates.
+    
+    Returns:
+        Redirect to profile on success, error message on failure
+    """
     if is_direct_call():
         return jsonify({'error': 'Direct calls are not allowed. Access denied!'}), 400
 
@@ -243,13 +286,14 @@ def update_account():
         value = data.get(update_obj['field'])
         if value is not None and value != "":
             if not validate_sanitize(value, update_obj['pattern']):
+                logger.warning(f"Invalid input for field {update_obj['field']}")
                 return jsonify({'success': False, 'error': 'Invalid input'}), 400
             update_fields[update_obj['field']] = value.lower() if update_obj['field'] == ('username' or 'email') else value
 
 
     old_profile_picture_id = data.get('profile_picture_id') if data.get('profile_picture_id') != "None" else None
     remove_old_picture_id = data.get('remove_profile_picture') if data.get('remove_profile_picture') else None
-    profile_picture = request.files['profile_picture'] if request.content_type.startswith('multipart/form-data') else None
+    profile_picture = request.files.get('profile_picture') if request.content_type.startswith('multipart/form-data') else None
 
     if profile_picture and remove_old_picture_id:
         return jsonify({'success': False, 'message': "These two operations can't happen concurrently"}), 400
@@ -263,19 +307,24 @@ def update_account():
         password_hash = ph.hash(new_password)
         update_fields['password_hash'] = password_hash
 
-    if not update_fields:
+    if not update_fields and not profile_picture and not remove_old_picture_id:
         return jsonify({'success': False, 'error': 'No fields to update'}), 400
 
     new_username = None
 
     try:
-        update_fields['profile_picture'] = upload_file(profile_picture) if profile_picture and profile_picture.filename else None
+        if profile_picture and profile_picture.filename:
+            update_fields['profile_picture'] = upload_file(profile_picture)
 
-        if isinstance(update_fields['profile_picture'], str):
-            return jsonify({'error': update_fields['profile_picture']}), 400
+            if isinstance(update_fields['profile_picture'], str):
+                return jsonify({'error': update_fields['profile_picture']}), 400
+        
+        if remove_old_picture_id:
+            update_fields['profile_picture'] = None
 
-        if update_fields['profile_picture'] is None and remove_old_picture_id is None:
-            del update_fields['profile_picture']
+        if 'profile_picture' not in update_fields or update_fields['profile_picture'] is None:
+            if not remove_old_picture_id:
+                update_fields.pop('profile_picture', None)
 
         get_db_users('write').update_one({'username': {"$eq": current_user.id}}, {'$set': update_fields})
 
@@ -287,9 +336,12 @@ def update_account():
             old_username = current_user.id
             new_username = update_fields['username']
             get_db_posts('write').update_many({'username': {"$eq": old_username}}, {'$set': {'username': new_username}})
+            logger.info(f"Username changed from {old_username} to {new_username}")
     except DuplicateKeyError:
+        logger.warning(f"Update attempt with duplicate username: {update_fields.get('username')}")
         return jsonify({'error': 'Username already taken'}), 409
     except Exception as e:
+        logger.error(f"Error updating account: {str(e)}")
         return jsonify({'success': False, 'error': 'Error in updating account'}), 500
 
     if new_username:
