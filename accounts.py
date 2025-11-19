@@ -114,7 +114,6 @@ def login():
             message = None
         return render_template('login-form.html', display='d-none' if message is None else '', message=message)
 
-@limiter.limit(PASSWORD_RESET_RATE_LIMIT)
 def forgot_password():
     """
     Handle forgot password requests.
