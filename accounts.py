@@ -244,7 +244,7 @@ def update_account():
         if value is not None and value != "":
             if not validate_sanitize(value, update_obj['pattern']):
                 return jsonify({'success': False, 'error': 'Invalid input'}), 400
-            update_fields[update_obj['field']] = value.lower() if update_obj['field'] == ('username' or 'email') else value
+            update_fields[update_obj['field']] = value.lower() if update_obj['field'] in ['username' or 'email'] else value
 
 
     old_profile_picture_id = data.get('profile_picture_id') if data.get('profile_picture_id') != "None" else None
