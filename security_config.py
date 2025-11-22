@@ -10,9 +10,6 @@ import os
 
 sec_bp = Blueprint('sec', __name__)
 
-res_hash_1 = None
-res_hash_2 = None
-
 limiter = Limiter(
     key_func=get_remote_address,
     default_limits=["3 per 3 hours"],
@@ -31,7 +28,6 @@ def init_config(app, routes):
     # print(new_secrets)
     app.secret_key = os.environ.get('SECRETS')
 
-    global res_hash_1, res_hash_2
     res_hash_1 = os.environ.get('RES_HASH_1')
     res_hash_2 = os.environ.get('RES_HASH_2')
 
